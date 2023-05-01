@@ -1,23 +1,8 @@
 import Ajv from "ajv";
+const fs = require("fs");
+import { join } from "path";
+
 const ajv = new Ajv();
-
-/**
- * 
- * 
- 
-
-So the structure we have is .... 
-
-Array of objects: 
-* Dunno if they're unique by charge code, rev code, CPT code?
-* Dunno if they have all the same keys or not? 
-* Dunno if gross charge effective date 4 has the same shape 
-
-
-
- */
-
-// deciding to keep same naming conventions because nightmare with the abbrv.
 
 const blueCrossHMO = {
   type: "object",
@@ -236,7 +221,7 @@ interface Procedure {
   Optum: { [index: string]: string };
 }
 
-const one = [
+const procedure = [
   {
     LOCATION: "LW",
     "HOSPITAL CHARGE CODE": 1037100001,
@@ -363,7 +348,7 @@ const jsonSchema = (procedure: { [index: string]: any }) => {
   return schema;
 };
 
-const foo = (
+const validateData = (
   schema: { [index: string]: any },
   data: { [index: string]: any }
 ) => {
@@ -374,4 +359,19 @@ const foo = (
   }
 };
 
-foo(schema, one);
+const validateBCHData = async () => {
+  const path = join(__dirname, "../data/little_bch_standard_charges.json");
+  const charges = await fs.readFileSync(path, "utf-8");
+
+  validateData(schema, charges);
+
+  //   const foo = fs.readFile(path, (err: any, data: any) => {
+  //     console.log("data", data);
+  //     console.log("err", err);
+  //   });
+  // read the file
+  // parse it to javascript
+  // run it through my function
+};
+
+validateBCHData();
